@@ -8,4 +8,6 @@ dependencies = [
     "dbt-snowflake~=1.11.0",
     "sqlfluff>=4.0.0",
     "sqlfluff-templater-dbt>=4.0.0",
+    "duckdb==1.5.5",
+    "dbt-duckdb==1.11.0"
 ]
