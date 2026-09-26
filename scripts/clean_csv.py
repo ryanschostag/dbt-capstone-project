@@ -20,13 +20,15 @@ def options():
     return arg_parser
 
 
-def remove_trailing_and_leading_double_quotes(value: str) -> str:
+def remove_trailing_and_leading_double_quotes_or_spaces(value: str) -> str:
     if isinstance(value, str):
-        while value.startswith('"'):
+
+        while value.startswith('"') or value.startswith(' '):
             value = value[1:]
 
-        while value.endswith('"'):
+        while value.endswith('"') or value.endswith(' '):
             value = value[:-1]
+
     return value
 
 
@@ -43,12 +45,18 @@ def clean_csv(input_file, output_file) -> None:
     csv_df = pd.read_csv(input_file)
 
     for column in csv_df.columns:
-        csv_df[column] = csv_df[column].apply(
-            remove_trailing_and_leading_double_quotes
+        cleaned_column = remove_trailing_and_leading_double_quotes_or_spaces(column)
+        csv_df.rename(columns={column: cleaned_column}, inplace=True)
+        csv_df[cleaned_column] = csv_df[cleaned_column].apply(
+            remove_trailing_and_leading_double_quotes_or_spaces
         )
 
-    csv_df.to_csv(output_file, index=False)
-    print(f'Cleaned CSV saved to: {output_file}')
+    output_file_dirname, output_file_basename = os.path.split(output_file)
+    output_file_basename = output_file_basename.replace('-', '_')
+    new_output_filepath = os.path.join(output_file_dirname, output_file_basename)
+    
+    csv_df.to_csv(new_output_filepath, index=False)
+    print(f'Cleaned CSV saved to: {new_output_filepath}')
 
 
 def main(inbox, outbox) -> None:
