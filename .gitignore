@@ -218,7 +218,6 @@ package-lock.yml
 logs/
 
 # project
-airstats/
 inbox/
 
 # DuckDB
