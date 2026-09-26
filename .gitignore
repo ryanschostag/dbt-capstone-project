@@ -216,8 +216,10 @@ dbt_packages/
 dbt_internal_packages/
 package-lock.yml
 logs/
-seeds/*.csv
 
 # project
-# /airstats
-inbox/*.csv
+airstats/
+inbox/
+
+# DuckDB
+*.duckdb

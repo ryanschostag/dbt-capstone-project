@@ -52,48 +52,21 @@ Cleaned CSV saved to: ./airstats/seeds/regions.csv
 Cleaned CSV saved to: ./airstats/seeds/runways.csv
 ```
 
-## Additional Notes on DuckDB Implementation
+## Testing
 
-### dbt-duckdb v1.11.0
+Use pytest to run tests against the script.
 
-- Installed with `pip install dbt-duckdb`
-- This `clean_csv.py` script did not resolve all of the issues with these input files when running `dbt seed`.
-- Error messages similar to this one would appear after running `dbt seed`:
+Example test command:
 
-```text
-22:38:40  Completed with 1 error, 0 partial successes, and 0 warnings:
-22:38:40
-22:38:40  Failure in seed airports (seeds\airports.csv)
-22:38:40    Runtime Error in seed airports (seeds\airports.csv)
-  Invalid Input Error: CSV Error on Line: 2477
-  Original Line:
-  9090,26AR,small_airport,"Fly ""N"" K Airport",35.2154998779,-91.807800293,400.0,,US,US-AR,Searcy,no,,,26AR,26AR,,,
-  Value with unterminated quote found.
-
-  Possible fixes:
-  * Disable the parser's strict mode (strict_mode=false) to allow reading rows that do not comply with the CSV standard.
-  * Enable ignore errors (ignore_errors=true) to skip this row
-  * Set quote to empty or to a different value (e.g., quote='')
-
-    file = C:\Users\ryans\code\dbt-capstone-project\airstats\seeds\airports.csv
-    delimiter = , (Set By User)
-    quote = " (Auto-Detected)
-    escape = (empty) (Auto-Detected)
-    new_line = \r\n (Auto-Detected)
-    header = true (Set By User)
-    skip_rows = 0 (Auto-Detected)
-    comment = (empty) (Auto-Detected)
-    strict_mode = true (Auto-Detected)
-    date_format =  (Auto-Detected)
-    timestamp_format =  (Auto-Detected)
-    null_padding = 0
-    sample_size = 20480
-    ignore_errors = false
-    all_varchar = 0
-  The Column types set by the user do not match the ones found by the sniffer.
-  Column at position: 0 Set type: INTEGER Sniffed type: BIGINT
-  Column at position: 6 Set type: INTEGER Sniffed type: DOUBLE
-  Column at position: 11 Set type: VARCHAR Sniffed type: BOOLEAN
+```bash
+pytest -q ./scripts/test_clean_csv.py
 ```
 
-- A macro needed to be written to overwrite the dbt adapter for DuckDB because the adapter installed as `dbt-duckdb` via `pip` built the `COPY INTO` statement calling `read_csv` without passing `escape='"'` as a parameter. That macro is located at `./airstats/macros/seed.sql`. This macro may need to be edited to support other database types. Without this macro, `dbt-duckdb` adapter was not escaping using `"`, which is a CSV standard escape character. For example, a value with `"Google ""This search term"""` would throw an error, because the auto-detection did not parse the escape character. Another example in the `airports.csv` file was something like `"Fly ""N"" K Airport"`, where this does work with `read_csv('seeds/airports.csv, header=true, escape='"')` in DuckDB, but not with the default macro used by the installed adapter.
+Example output:
+
+```text
+.....                            [100%]
+5 passed in 0.45s
+```
+
+Use your preferred `pytest` options.

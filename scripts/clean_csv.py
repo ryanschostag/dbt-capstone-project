@@ -22,8 +22,11 @@ def options():
 
 def remove_trailing_and_leading_double_quotes(value: str) -> str:
     if isinstance(value, str):
-        while value.startswith('"') and value.endswith('"'):
-            return value[1:-1]
+        while value.startswith('"'):
+            value = value[1:]
+
+        while value.endswith('"'):
+            value = value[:-1]
     return value
 
 

@@ -20,6 +20,22 @@ Build a dbt project analyzing global airport data on Snowflake.
 
 ## Part 1: Project Setup
 
+### Step 0: Install packages
+
+From the project root (where pyproject.toml) is located, run:
+
+```bash
+pip install --group prod
+```
+
+This installs the packages needed for the project
+
+```bash
+pip install --group dev
+```
+
+You can optionally install `dev` packages, such as `pytest`, which is currently used to test the newly added `scripts/` Python scripts. 
+
 ### Step 1: Initialize the dbt Project
 
 * Create a new dbt project called `airstats`. You only need to do the `dbt init ...` step, your uv/virtualenv is already up and running
@@ -310,3 +326,53 @@ Implement the following:
 * Add descriptions to the silver tables and their columns
 * Use a '{{ doc("...") }}'-based documentation at least once
 * Create an overview.md where you discuss in a few sentences how the silver tables interconnect
+
+
+## Part 10: DuckDB Implementation
+
+1. Install with `pip install dbt-duckdb`
+2. Copy the `duckdb/macros/seed.sql` file to your `airstats/macros/` folder to resolve the warning described below.
+
+### dbt-duckdb v1.11.0 Errors with dbt seed
+
+- The `scripts/clean_csv.py` script did not resolve all of the issues with these input files when running `dbt seed`.
+- Error messages similar to this one would appear after running `dbt seed`:
+
+```text
+22:38:40  Completed with 1 error, 0 partial successes, and 0 warnings:
+22:38:40
+22:38:40  Failure in seed airports (seeds\airports.csv)
+22:38:40    Runtime Error in seed airports (seeds\airports.csv)
+  Invalid Input Error: CSV Error on Line: 2477
+  Original Line:
+  9090,26AR,small_airport,"Fly ""N"" K Airport",35.2154998779,-91.807800293,400.0,,US,US-AR,Searcy,no,,,26AR,26AR,,,
+  Value with unterminated quote found.
+
+  Possible fixes:
+  * Disable the parser's strict mode (strict_mode=false) to allow reading rows that do not comply with the CSV standard.
+  * Enable ignore errors (ignore_errors=true) to skip this row
+  * Set quote to empty or to a different value (e.g., quote='')
+
+    file = C:\Users\ryans\code\dbt-capstone-project\airstats\seeds\airports.csv
+    delimiter = , (Set By User)
+    quote = " (Auto-Detected)
+    escape = (empty) (Auto-Detected)
+    new_line = \r\n (Auto-Detected)
+    header = true (Set By User)
+    skip_rows = 0 (Auto-Detected)
+    comment = (empty) (Auto-Detected)
+    strict_mode = true (Auto-Detected)
+    date_format =  (Auto-Detected)
+    timestamp_format =  (Auto-Detected)
+    null_padding = 0
+    sample_size = 20480
+    ignore_errors = false
+    all_varchar = 0
+  The Column types set by the user do not match the ones found by the sniffer.
+  Column at position: 0 Set type: INTEGER Sniffed type: BIGINT
+  Column at position: 6 Set type: INTEGER Sniffed type: DOUBLE
+  Column at position: 11 Set type: VARCHAR Sniffed type: BOOLEAN
+```
+
+- A macro needed to be written to add `escape='"'` to the build `COPY INTO` statement that loads the csv files into the database 
+- This macro overwrites the seed.sql macro that comes with `dbt-duckdb`
