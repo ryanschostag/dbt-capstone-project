@@ -13,6 +13,13 @@ lighted	runway_lighted
 closed	runway_closed
 */
 
+{{
+    config(
+        materialized='ephemeral',
+        unique_key='runway_id'
+    )
+}}
+
 with runways as (
     select
         id as runway_id,

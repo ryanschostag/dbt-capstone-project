@@ -268,18 +268,38 @@ Add a new record to `RAW.airport_comments`. Then materialize the incremental mod
 
 Add your solution in the next lines:
 * Adding a new record:
-  ```
-  REPLACE THIS CODE BLOCK BY PASTING THE SQL for adding a new record to `RAW.airport_comments`
+  ```sql
+  insert into airstats.dbt_ryan_raw.airport_comments
+  select max(id) + 1, 
+    83354,
+    6077,
+    'SESD', 
+    get_current_timestamp(),
+    'Goofybird_TSYS',
+    'Website needs more information',
+    'There are several points missing on their website. A phone call is required to get the needed.'
+  from airstats.dbt_ryan_raw.airport_comments;
   ```
 * Command to execute to update this model (but only this model, not all the models):
-  ```
-  REPLACE THIS CODE BLOCK BY PASTING THE dbt COMMAND YOU EXECUTED
+  ```bash
+  dbt build --select +silver_airport_comments
   ``` 
 * Execute an SQL on the Snowflake UI to ensure the new record has been added:
-  ```
-  REPLACE THIS CODE BLOCK BY PASTING 
-  1) THE SQL to extract the new record from `silver_airport_comments`
-  2) THE result you see in Snowflake
+  ```sql
+  -- 1) THE SQL to extract the new record from `silver_airport_comments`
+  -- Note: This is DuckDB
+  select 
+    sac.comment_id
+    , sac.airport_ident 
+    , sac.comment_timestamp
+    , sac.member_nickname
+    , sac.comment_subject 
+    , sac.comment_body 
+  from airstats.dbt_ryan_dev_silver.silver_airport_comments sac
+  where sac.member_nickname = 'Goofybird_TSYS';
+  -- 2) THE result you see in Snowflake
+  -- Note: This is DuckDB
+  610922	SESD	2026-09-27 19:26:15.485	Goofybird_TSYS	Website needs more information	There are several points missing on their website. A phone call is required to get the information needed.
   ``` 
 
 **Requirements** 

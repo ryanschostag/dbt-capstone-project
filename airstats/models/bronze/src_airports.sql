@@ -14,6 +14,13 @@ iso_country	iso_country (no rename)
 iso_region	iso_region (no rename)
 */
 
+{{
+    config(
+        materialized='ephemeral',
+        unique_key='airport_ident'
+    )
+}}
+
 with airports as (
     select 
         ident as airport_ident,

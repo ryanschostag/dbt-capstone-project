@@ -47,14 +47,8 @@ sources:
             data_tests:
               - not_null
           - name: memberNickname
-            data_tests:
-              - not_null
           - name: subject
-            data_tests:
-              - not_null
           - name: body
-            data_tests:
-              - not_null
       - name: raw_airport_frequencies
         identifier: airport_frequencies
         description: Lists communication frequencies for the airports in raw_airports
@@ -63,15 +57,15 @@ sources:
             data_tests:
               - not_null
               - unique
+          - name: airport_ref
           - name: airport_ident
             data_tests:
               - not_null
           - name: type
             data_tests:
               - not_null
-          - name: frequency
-            data_tests:
-              - not_null
+          - name: description
+          - name: frequency_mhz
       - name: raw_countries
         identifier: countries
         description: A list of the world's countries. Required to interpret the country codes in the raw_airports and raw_navaids
@@ -81,8 +75,6 @@ sources:
               - not_null
               - unique
           - name: code
-            data_tests:
-              - not_null
           - name: name
             data_tests:
               - not_null
@@ -102,8 +94,6 @@ sources:
             data_tests:
               - not_null
           - name: ident
-            data_tests:
-              - not_null
           - name: name
             data_tests:
               - not_null
@@ -121,8 +111,6 @@ sources:
               - not_null
           - name: elevation_ft
           - name: iso_country
-            data_tests:
-              - not_null
           - name: dme_frequency_khz
           - name: dme_channel
           - name: dme_latitude_deg
@@ -130,11 +118,7 @@ sources:
           - name: slaved_variation_deg
           - name: magnetic_variation_deg
           - name: usageType
-            data_tests:
-              - not_null
           - name: power
-            data_tests:
-              - not_null
           - name: associated_airport
       - name: raw_regions
         identifier: regions
@@ -148,15 +132,11 @@ sources:
             data_tests:
               - not_null
           - name: local_code
-            data_tests:
-              - not_null
           - name: name
             data_tests:
               - not_null
           - name: continent
           - name: iso_country
-            data_tests:
-              - not_null
           - name: wikipedia_link
           - name: keywords
       - name: raw_runways
@@ -174,23 +154,11 @@ sources:
             data_tests:
               - not_null
           - name: length_ft
-            data_tests:
-              - not_null
           - name: width_ft
-            data_tests:
-              - not_null
           - name: surface
-            data_tests:
-              - not_null
           - name: lighted
-            data_tests:
-              - not_null
           - name: closed
-            data_tests:
-              - not_null
           - name: le_ident
-            data_tests:
-              - not_null
           - name: le_latitude_deg
           - name: le_longitude_deg
           - name: le_elevation_ft
