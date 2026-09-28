@@ -315,18 +315,42 @@ Add your solution in the next lines:
 
 The airport `Los Angeles County Sheriff's Department Heliport` (airport_ident: `01CN`) must be closed. Simulate this change by updating the `type` column of this heliport to `closed` in `RAW.AIRPORTS`, then run `dbt run --select silver_airports` followed by `dbt snapshot`.
 
+Notes for Course Instructors:
+
+- `01CN` is a `keyword` value for this airport with an `ident` of `US-9364`, whose `type` is already set to `closed` prior to taking the first snapshot above.
+- There are 2 airports with the `name` of `Los Angeles County Sheriff's Department Heliport`. The other record is not `closed`, and has a `type` of `heliport` and an `ident` of `US-3302`. This record will be used in this exercise instead.
+
 * Updating the record to "closed":
-  ```
-  REPLACE THIS BLOCK BY PASTING THE SQL you executed
+  ```sql
+  update airstats.dbt_ryan_dev_raw.airports
+  set type = 'closed'
+  where ident = 'US-3302';
   ```
 * Command to execute and snapshot update:
-  ```
-  REPLACE THIS CODE BLOCK BY PASTING THE dbt COMMAND YOU EXECUTED
+  ```bash
+  dbt snapshot --select scd_silver_airports
   ``` 
 
 #### Analyses
 * Create `analyses/la_heliport_closed.sql` where you validate if the snapshot went through - select every line corresponding to this airport in the snapshot table.
 * Execute the analysis and print the values to screen
+
+Compiled analysis code:
+```sql
+with closed_heliports as (
+    select *
+    from "airstats"."dbt_ryan_dev_snapshots"."scd_silver_airports" ssa
+    where ssa.airport_ident = 'US-3302'
+    and dbt_valid_to is null
+)
+select *
+from closed_heliports;
+```
+
+Data output:
+```text
+US-3302	closed	Los Angeles County Sheriff's Department Heliport	34.050838	-118.168329		US	US-CA	a1d0c468c4433982ba5a21427fdf65ce	2026-09-28 16:10:25.800	2026-09-28 16:10:25.800	
+```
 
 ### Exercise 10: Snapshot on silver_runways
 * Create a snapshot for `silver_runways`, call it `scd_silver_runways`. Use the same check strategy as for `scd_silver_airports`.

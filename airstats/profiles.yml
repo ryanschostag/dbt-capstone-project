@@ -1,15 +1,15 @@
 airstats:
   outputs:
-    staging:
+    silver:
       type: duckdb
       path: "airstats.duckdb"
-      schema: "dbt_{{ env_var('DBT_ENV_NAME') | lower | trim }}_staging"
+      schema: "silver"
       threads: 4
 
-    prod:
+    bronze:
       type: duckdb
       path: "airstats.duckdb"
-      schema: "dbt_{{ env_var('DBT_ENV_NAME') | lower | trim }}_prod"
+      schema: "bronze"
       threads: 4
 
     dev:

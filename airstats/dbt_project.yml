@@ -42,3 +42,9 @@ seeds:
   airstats:
     +schema: raw
     +materialized: seed
+
+snapshots:
+  airstats:
+    silver:
+      +strategy: check
+      +check_cols: all
