@@ -29,6 +29,5 @@ with silver_airport_comments as (
         comment_body,
         get_current_timestamp() as loaded_at
     from {{ ref('src_airport_comments') }}
-    where comment_body is not null and comment_body != ''
 )
 select * from silver_airport_comments

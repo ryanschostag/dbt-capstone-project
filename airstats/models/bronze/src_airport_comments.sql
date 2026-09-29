@@ -29,7 +29,6 @@ with airport_comments as (
         body as comment_body
     from {{ source('airstats', 'raw_airport_comments') }}
     where comment_body is not null and comment_body != ''
-    and member_nickname is not null and member_nickname != ''
     and comment_subject is not null and comment_subject != ''
 )
 select * from airport_comments
