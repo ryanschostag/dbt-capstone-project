@@ -1,0 +1,65 @@
+models:
+  - name: silver_airports
+    columns:
+      - name: airport_ident
+        data_tests:
+          - not_null
+          - unique
+      - name: airport_type
+        data_tests:
+          - not_null
+        accepted_values:
+          - balloonport
+          - closed
+          - heliport
+          - large_airport
+          - medium_airport
+          - seaplane_base
+          - small_airport
+  - name: silver_runways
+    columns:
+      - name: runway_id
+        data_tests:
+          - not_null
+          - unique
+      - name: airport_ident
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('silver_airports')
+              field: airport_ident
+              config:
+                severity: warn
+      - name: runway_lighted
+        data_tests:
+          - not_null
+        accepted_values:
+          - 0
+          - 1
+      - name: runway_closed
+        data_tests:
+          - not_null
+        accepted_values:
+          - 0
+          - 1
+  - name: silver_airport_comments
+    columns:
+      - name: comment_id
+        data_tests:
+          - not_null
+          - unique
+      - name: airport_ident
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('silver_airports')
+              field: airport_ident
+              config:
+                severity: warn
+      - name: comment_timestamp
+        data_tests:
+          - not_null
+      - name: loaded_at
+        data_tests:
+          - not_null
+
