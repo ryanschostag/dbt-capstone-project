@@ -39,3 +39,8 @@ models:
 seeds:
   airstats:
     +schema: raw
+
+data_tests:
+  airstats:
+    +store_failures: true
+    +schema: test_failures
