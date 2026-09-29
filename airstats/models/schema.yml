@@ -16,6 +16,18 @@ models:
           - medium_airport
           - seaplane_base
           - small_airport
+      - name: airport_lat
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: -90
+                max_value: 90
+      - name: airport_long
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: -180
+                max_value: 180
   - name: silver_runways
     columns:
       - name: runway_id
@@ -26,8 +38,9 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('silver_airports')
-              field: airport_ident
+              arguments:
+                to: ref('silver_airports')
+                field: airport_ident
               config:
                 severity: warn
       - name: runway_lighted
@@ -43,6 +56,17 @@ models:
           - 0
           - 1
   - name: silver_airport_comments
+    data_tests:
+     - dbt_expectations.expect_table_columns_to_match_ordered_list:
+          arguments:
+            column_list:
+              - comment_id
+              - airport_ident
+              - comment_timestamp
+              - member_nickname
+              - comment_subject
+              - comment_body
+              - loaded_at
     columns:
       - name: comment_id
         data_tests:
@@ -52,8 +76,9 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('silver_airports')
-              field: airport_ident
+              arguments:
+                to: ref('silver_airports')
+                field: airport_ident
               config:
                 severity: warn
       - name: comment_timestamp

@@ -39,9 +39,3 @@ models:
 seeds:
   airstats:
     +schema: raw
-
-snapshots:
-  airstats:
-    silver:
-      +strategy: check
-      +check_cols: all
