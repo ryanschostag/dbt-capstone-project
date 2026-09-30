@@ -1,10 +1,24 @@
 airstats:
   outputs:
-    dev:
+    local:
       type: duckdb
       path: "airstats.duckdb"
-      schema: "dbt_{{ env_var('DBT_ENV_NAME') | lower | trim }}_dev"
+      schema: local
       threads: 4
+
+    dev:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('DBT_USER') }}"
+
+      role: TRANSFORM
+      private_key: "{{ env_var('PRIVATE_KEY') }}"
+      private_key_passphrase: "{{ env_var('PRIVATE_KEY_PASSPHRASE') }}"
+
+      database: AIRBNB
+      schema: "{{ env_var('DBT_ENV_NAME') | lower | trim }}"
+      threads: 4
+      warehouse: COMPUTE_WH
 
     staging:
       type: snowflake
@@ -34,4 +48,4 @@ airstats:
       threads: 4
       warehouse: COMPUTE_WH
 
-  target: dev
+  target: local
