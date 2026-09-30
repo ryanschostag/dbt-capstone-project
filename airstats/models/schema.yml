@@ -1,5 +1,6 @@
 models:
   - name: silver_airports
+    description: "{{ doc('ourairports_data_dictionary') }}"
     columns:
       - name: airport_ident
         data_tests:
@@ -29,6 +30,7 @@ models:
                 min_value: -180
                 max_value: 180
   - name: silver_runways
+    description: "{{ doc('ourairports_data_dictionary') }}"
     columns:
       - name: runway_id
         data_tests:
@@ -56,6 +58,7 @@ models:
           - 0
           - 1
   - name: silver_airport_comments
+    description: "{{ doc('ourairports_data_dictionary') }}"
     data_tests:
      - dbt_expectations.expect_table_columns_to_match_ordered_list:
           arguments:

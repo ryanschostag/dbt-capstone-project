@@ -1,7 +1,7 @@
 sources:
   - name: airstats
     schema: raw
-    description: Raw data sourced from ourairports.com. Data Dictionary @ https://ourairports.com/help/data-dictionary.html
+    description: "{{ doc('ourairports_data_dictionary') }}"
     tables:
       - name: raw_airports
         identifier: airports
