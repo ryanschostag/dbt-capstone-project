@@ -3,7 +3,6 @@ airstats:
     local:
       type: duckdb
       path: "airstats.duckdb"
-      schema: local
       threads: 4
 
     dev:
