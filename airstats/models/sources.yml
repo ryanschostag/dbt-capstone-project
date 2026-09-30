@@ -1,7 +1,7 @@
 sources:
   - name: airstats
     schema: raw
-    description: "{{ doc('ourairports_data_dictionary') }}"
+    description: "{{ doc('raw_airports_data_dictionary') }}"
     tables:
       - name: raw_airports
         identifier: airports
@@ -51,7 +51,7 @@ sources:
           - name: body
       - name: raw_airport_frequencies
         identifier: airport_frequencies
-        description: Lists communication frequencies for the airports in raw_airports
+        description: "{{ doc('raw_airport_frequencies_data_dictionary') }}"
         columns:
           - name: id
             data_tests:
@@ -68,7 +68,7 @@ sources:
           - name: frequency_mhz
       - name: raw_countries
         identifier: countries
-        description: A list of the world's countries. Required to interpret the country codes in the raw_airports and raw_navaids
+        description: "{{ doc('raw_countries_data_dictionary') }}"
         columns:
           - name: id
             data_tests:
@@ -82,9 +82,10 @@ sources:
           - name: wikipedia_link
             data_tests:
               - not_null
+
       - name: raw_navaids
         identifier: navaids
-        description: Lists worldwide radio navigation aids
+        description: "{{ doc('raw_navaids_data_dictionary') }}"
         columns:
           - name: id
             data_tests:
@@ -122,7 +123,7 @@ sources:
           - name: associated_airport
       - name: raw_regions
         identifier: regions
-        description: A list of all countries' top-level administrative subdivisions (provinces, governorates, states, etc.). Required to interpret the region codes raw_airport
+        description: "{{ doc('raw_regions_data_dictionary') }}"
         columns:
           - name: id
             data_tests:
@@ -139,9 +140,10 @@ sources:
           - name: iso_country
           - name: wikipedia_link
           - name: keywords
+
       - name: raw_runways
         identifier: runways
-        description: Lists runways for the airports in raw_airports
+        description: "{{ doc('raw_runways_data_dictionary') }}"
         columns:
           - name: id
             data_tests:
@@ -170,3 +172,5 @@ sources:
           - name: he_elevation_ft
           - name: he_heading_degT
           - name: he_displaced_threshold_ft
+
+      

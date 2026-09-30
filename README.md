@@ -269,7 +269,7 @@ Add a new record to `RAW.airport_comments`. Then materialize the incremental mod
 Add your solution in the next lines:
 * Adding a new record:
   ```sql
-  insert into airstats.dbt_ryan_raw.airport_comments
+  insert into airstats.raw.airport_comments
   select max(id) + 1, 
     83354,
     6077,
@@ -278,7 +278,7 @@ Add your solution in the next lines:
     'Goofybird_TSYS',
     'Website needs more information',
     'There are several points missing on their website. A phone call is required to get the needed.'
-  from airstats.dbt_ryan_raw.airport_comments;
+  from airstats.raw.airport_comments;
   ```
 * Command to execute to update this model (but only this model, not all the models):
   ```bash
@@ -295,7 +295,7 @@ Add your solution in the next lines:
     , sac.member_nickname
     , sac.comment_subject 
     , sac.comment_body 
-  from airstats.dbt_ryan_dev_silver.silver_airport_comments sac
+  from airstats.silver.silver_airport_comments sac
   where sac.member_nickname = 'Goofybird_TSYS';
   -- 2) THE result you see in Snowflake
   -- Note: This is DuckDB
@@ -322,7 +322,7 @@ Notes for Course Instructors:
 
 * Updating the record to "closed":
   ```sql
-  update airstats.dbt_ryan_dev_raw.airports
+  update airstats.raw.airports
   set type = 'closed'
   where ident = 'US-3302';
   ```
@@ -339,7 +339,7 @@ Compiled analysis code:
 ```sql
 with closed_heliports as (
     select *
-    from "airstats"."dbt_ryan_dev_snapshots"."scd_silver_airports" ssa
+    from "airstats"."snapshots"."scd_silver_airports" ssa
     where ssa.airport_ident = 'US-3302'
     and dbt_valid_to is null
 )
