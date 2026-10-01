@@ -20,6 +20,22 @@ Build a dbt project analyzing global airport data on Snowflake.
 
 ## Part 1: Project Setup
 
+### Step 0: Install packages
+
+From the project root (where pyproject.toml) is located, run:
+
+```bash
+pip install --group prod
+```
+
+This installs the packages needed for the project
+
+```bash
+pip install --group dev
+```
+
+You can optionally install `dev` packages, such as `pytest`, which is currently used to test the newly added `scripts/` Python scripts. 
+
 ### Step 1: Initialize the dbt Project
 
 * Create a new dbt project called `airstats`. You only need to do the `dbt init ...` step, your uv/virtualenv is already up and running
@@ -252,18 +268,38 @@ Add a new record to `RAW.airport_comments`. Then materialize the incremental mod
 
 Add your solution in the next lines:
 * Adding a new record:
-  ```
-  REPLACE THIS CODE BLOCK BY PASTING THE SQL for adding a new record to `RAW.airport_comments`
+  ```sql
+  insert into airstats.raw.airport_comments
+  select max(id) + 1, 
+    83354,
+    6077,
+    'SESD', 
+    get_current_timestamp(),
+    'Goofybird_TSYS',
+    'Website needs more information',
+    'There are several points missing on their website. A phone call is required to get the needed.'
+  from airstats.raw.airport_comments;
   ```
 * Command to execute to update this model (but only this model, not all the models):
-  ```
-  REPLACE THIS CODE BLOCK BY PASTING THE dbt COMMAND YOU EXECUTED
+  ```bash
+  dbt build --select +silver_airport_comments
   ``` 
 * Execute an SQL on the Snowflake UI to ensure the new record has been added:
-  ```
-  REPLACE THIS CODE BLOCK BY PASTING 
-  1) THE SQL to extract the new record from `silver_airport_comments`
-  2) THE result you see in Snowflake
+  ```sql
+  -- 1) THE SQL to extract the new record from `silver_airport_comments`
+  -- Note: This is DuckDB
+  select 
+    sac.comment_id
+    , sac.airport_ident 
+    , sac.comment_timestamp
+    , sac.member_nickname
+    , sac.comment_subject 
+    , sac.comment_body 
+  from airstats.silver.silver_airport_comments sac
+  where sac.member_nickname = 'Goofybird_TSYS';
+  -- 2) THE result you see in Snowflake
+  -- Note: This is DuckDB
+  610922	SESD	2026-09-27 19:26:15.485	Goofybird_TSYS	Website needs more information	There are several points missing on their website. A phone call is required to get the information needed.
   ``` 
 
 **Requirements** 
@@ -279,18 +315,42 @@ Add your solution in the next lines:
 
 The airport `Los Angeles County Sheriff's Department Heliport` (airport_ident: `01CN`) must be closed. Simulate this change by updating the `type` column of this heliport to `closed` in `RAW.AIRPORTS`, then run `dbt run --select silver_airports` followed by `dbt snapshot`.
 
+Notes for Course Instructors:
+
+- `01CN` is a `keyword` value for this airport with an `ident` of `US-9364`, whose `type` is already set to `closed` prior to taking the first snapshot above.
+- There are 2 airports with the `name` of `Los Angeles County Sheriff's Department Heliport`. The other record is not `closed`, and has a `type` of `heliport` and an `ident` of `US-3302`. This record will be used in this exercise instead.
+
 * Updating the record to "closed":
-  ```
-  REPLACE THIS BLOCK BY PASTING THE SQL you executed
+  ```sql
+  update airstats.raw.airports
+  set type = 'closed'
+  where ident = 'US-3302';
   ```
 * Command to execute and snapshot update:
-  ```
-  REPLACE THIS CODE BLOCK BY PASTING THE dbt COMMAND YOU EXECUTED
+  ```bash
+  dbt snapshot --select scd_silver_airports
   ``` 
 
 #### Analyses
 * Create `analyses/la_heliport_closed.sql` where you validate if the snapshot went through - select every line corresponding to this airport in the snapshot table.
 * Execute the analysis and print the values to screen
+
+Compiled analysis code:
+```sql
+with closed_heliports as (
+    select *
+    from "airstats"."snapshots"."scd_silver_airports" ssa
+    where ssa.airport_ident = 'US-3302'
+    and dbt_valid_to is null
+)
+select *
+from closed_heliports;
+```
+
+Data output:
+```text
+US-3302	closed	Los Angeles County Sheriff's Department Heliport	34.050838	-118.168329		US	US-CA	a1d0c468c4433982ba5a21427fdf65ce	2026-09-28 16:10:25.800	2026-09-28 16:10:25.800	
+```
 
 ### Exercise 10: Snapshot on silver_runways
 * Create a snapshot for `silver_runways`, call it `scd_silver_runways`. Use the same check strategy as for `scd_silver_airports`.
@@ -310,3 +370,53 @@ Implement the following:
 * Add descriptions to the silver tables and their columns
 * Use a '{{ doc("...") }}'-based documentation at least once
 * Create an overview.md where you discuss in a few sentences how the silver tables interconnect
+
+
+## Part 10: DuckDB Implementation
+
+1. Install with `pip install dbt-duckdb`
+2. Copy the `duckdb/macros/seed.sql` file to your `airstats/macros/` folder to resolve the warning described below.
+
+### dbt-duckdb v1.11.0 Errors with dbt seed
+
+- The `scripts/clean_csv.py` script did not resolve all of the issues with these input files when running `dbt seed`.
+- Error messages similar to this one would appear after running `dbt seed`:
+
+```text
+22:38:40  Completed with 1 error, 0 partial successes, and 0 warnings:
+22:38:40
+22:38:40  Failure in seed airports (seeds\airports.csv)
+22:38:40    Runtime Error in seed airports (seeds\airports.csv)
+  Invalid Input Error: CSV Error on Line: 2477
+  Original Line:
+  9090,26AR,small_airport,"Fly ""N"" K Airport",35.2154998779,-91.807800293,400.0,,US,US-AR,Searcy,no,,,26AR,26AR,,,
+  Value with unterminated quote found.
+
+  Possible fixes:
+  * Disable the parser's strict mode (strict_mode=false) to allow reading rows that do not comply with the CSV standard.
+  * Enable ignore errors (ignore_errors=true) to skip this row
+  * Set quote to empty or to a different value (e.g., quote='')
+
+    file = C:\Users\ryans\code\dbt-capstone-project\airstats\seeds\airports.csv
+    delimiter = , (Set By User)
+    quote = " (Auto-Detected)
+    escape = (empty) (Auto-Detected)
+    new_line = \r\n (Auto-Detected)
+    header = true (Set By User)
+    skip_rows = 0 (Auto-Detected)
+    comment = (empty) (Auto-Detected)
+    strict_mode = true (Auto-Detected)
+    date_format =  (Auto-Detected)
+    timestamp_format =  (Auto-Detected)
+    null_padding = 0
+    sample_size = 20480
+    ignore_errors = false
+    all_varchar = 0
+  The Column types set by the user do not match the ones found by the sniffer.
+  Column at position: 0 Set type: INTEGER Sniffed type: BIGINT
+  Column at position: 6 Set type: INTEGER Sniffed type: DOUBLE
+  Column at position: 11 Set type: VARCHAR Sniffed type: BOOLEAN
+```
+
+- A macro needed to be written to add `escape='"'` to the build `COPY INTO` statement that loads the csv files into the database 
+- This macro overwrites the seed.sql macro that comes with `dbt-duckdb`

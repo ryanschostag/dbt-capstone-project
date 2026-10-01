@@ -216,5 +216,10 @@ dbt_packages/
 dbt_internal_packages/
 package-lock.yml
 logs/
+.user.yml
 
-/airstats
+# project
+inbox/
+
+# DuckDB
+*.duckdb

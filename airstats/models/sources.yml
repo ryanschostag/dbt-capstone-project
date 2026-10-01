@@ -1,0 +1,176 @@
+sources:
+  - name: airstats
+    schema: raw
+    description: "{{ doc('raw_airports_data_dictionary') }}"
+    tables:
+      - name: raw_airports
+        identifier: airports
+        description: Contains information on all airports on ourairports.com.
+        columns:
+          - name: id
+            data_tests:
+              - not_null
+              - unique
+          - name: ident
+            data_tests:
+              - not_null
+          - name: type
+          - name: name
+          - name: latitude_deg
+          - name: longitude_deg
+          - name: elevation_ft
+          - name: continent
+          - name: iso_country
+          - name: iso_region
+          - name: municipality
+          - name: scheduled_service
+          - name: gps_code
+          - name: icao_code
+          - name: iata_code
+          - name: local_code
+          - name: home_link
+          - name: wikipedia_link
+          - name: keywords
+      - name: raw_airport_comments
+        identifier: airport_comments
+        columns:
+          - name: id
+            data_tests:
+              - not_null
+              - unique
+          - name: threadRef
+          - name: airportRef
+          - name: airportIdent
+            data_tests:
+              - not_null
+          - name: date
+            data_tests:
+              - not_null
+          - name: memberNickname
+          - name: subject
+          - name: body
+      - name: raw_airport_frequencies
+        identifier: airport_frequencies
+        description: "{{ doc('raw_airport_frequencies_data_dictionary') }}"
+        columns:
+          - name: id
+            data_tests:
+              - not_null
+              - unique
+          - name: airport_ref
+          - name: airport_ident
+            data_tests:
+              - not_null
+          - name: type
+            data_tests:
+              - not_null
+          - name: description
+          - name: frequency_mhz
+      - name: raw_countries
+        identifier: countries
+        description: "{{ doc('raw_countries_data_dictionary') }}"
+        columns:
+          - name: id
+            data_tests:
+              - not_null
+              - unique
+          - name: code
+          - name: name
+            data_tests:
+              - not_null
+          - name: continent
+          - name: wikipedia_link
+            data_tests:
+              - not_null
+
+      - name: raw_navaids
+        identifier: navaids
+        description: "{{ doc('raw_navaids_data_dictionary') }}"
+        columns:
+          - name: id
+            data_tests:
+              - not_null
+              - unique
+          - name: filename
+            data_tests:
+              - not_null
+          - name: ident
+          - name: name
+            data_tests:
+              - not_null
+          - name: type
+            data_tests:
+              - not_null
+          - name: frequency_khz
+            data_tests:
+              - not_null
+          - name: latitude_deg
+            data_tests:
+              - not_null
+          - name: longitude_deg
+            data_tests:
+              - not_null
+          - name: elevation_ft
+          - name: iso_country
+          - name: dme_frequency_khz
+          - name: dme_channel
+          - name: dme_latitude_deg
+          - name: dme_elevation_ft
+          - name: slaved_variation_deg
+          - name: magnetic_variation_deg
+          - name: usageType
+          - name: power
+          - name: associated_airport
+      - name: raw_regions
+        identifier: regions
+        description: "{{ doc('raw_regions_data_dictionary') }}"
+        columns:
+          - name: id
+            data_tests:
+              - not_null
+              - unique
+          - name: code
+            data_tests:
+              - not_null
+          - name: local_code
+          - name: name
+            data_tests:
+              - not_null
+          - name: continent
+          - name: iso_country
+          - name: wikipedia_link
+          - name: keywords
+
+      - name: raw_runways
+        identifier: runways
+        description: "{{ doc('raw_runways_data_dictionary') }}"
+        columns:
+          - name: id
+            data_tests:
+              - not_null
+              - unique
+          - name: airport_ref
+            data_tests:
+              - not_null
+          - name: airport_ident
+            data_tests:
+              - not_null
+          - name: length_ft
+          - name: width_ft
+          - name: surface
+          - name: lighted
+          - name: closed
+          - name: le_ident
+          - name: le_latitude_deg
+          - name: le_longitude_deg
+          - name: le_elevation_ft
+          - name: le_heading_degT
+          - name: le_displaced_threshold_ft
+          - name: he_ident
+          - name: he_latitude_deg
+          - name: he_longitude_deg
+          - name: he_elevation_ft
+          - name: he_heading_degT
+          - name: he_displaced_threshold_ft
+
+      

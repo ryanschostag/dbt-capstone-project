@@ -1,0 +1,103 @@
+models:
+  - name: bronze_airport_comments
+    description: "{{ doc('bronze_airport_comments_data_dictionary') }}"
+
+  - name: bronze_airports
+    description: "{{ doc('bronze_airports_data_dictionary') }}"
+
+  - name: bronze_runways
+    description: "{{ doc('bronze_runways_data_dictionary') }}"
+
+  - name: silver_airports
+    description: "{{ doc('silver_airports_data_dictionary') }}"
+    columns:
+      - name: airport_ident
+        data_tests:
+          - not_null
+          - unique
+      - name: airport_type
+        data_tests:
+          - not_null
+        accepted_values:
+          - balloonport
+          - closed
+          - heliport
+          - large_airport
+          - medium_airport
+          - seaplane_base
+          - small_airport
+      - name: airport_lat
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: -90
+                max_value: 90
+      - name: airport_long
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: -180
+                max_value: 180
+  - name: silver_runways
+    description: "{{ doc('silver_runways_data_dictionary') }}"
+    columns:
+      - name: runway_id
+        data_tests:
+          - not_null
+          - unique
+      - name: airport_ident
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('silver_airports')
+                field: airport_ident
+              config:
+                severity: warn
+      - name: runway_lighted
+        data_tests:
+          - not_null
+        accepted_values:
+          - 0
+          - 1
+      - name: runway_closed
+        data_tests:
+          - not_null
+        accepted_values:
+          - 0
+          - 1
+  - name: silver_airport_comments
+    description: "{{ doc('silver_airport_comments_data_dictionary') }}"
+    data_tests:
+     - dbt_expectations.expect_table_columns_to_match_ordered_list:
+          arguments:
+            column_list:
+              - comment_id
+              - airport_ident
+              - comment_timestamp
+              - member_nickname
+              - comment_subject
+              - comment_body
+              - loaded_at
+    columns:
+      - name: comment_id
+        data_tests:
+          - not_null
+          - unique
+      - name: airport_ident
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('silver_airports')
+                field: airport_ident
+              config:
+                severity: warn
+      - name: comment_timestamp
+        data_tests:
+          - not_null
+      - name: loaded_at
+        data_tests:
+          - not_null
+
+
